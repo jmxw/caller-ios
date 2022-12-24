@@ -11,7 +11,8 @@ final class MainViewController: BaseViewController<MainViewModel> {
 
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .medium)
+        label.font = .systemFont(ofSize: 25, weight: .medium)
+        label.numberOfLines = 0
         return label
     }()
     
