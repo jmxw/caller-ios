@@ -6,31 +6,43 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+import RxFlow
+@_exported import RxBinding
 
-@main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+@UIApplicationMain
+final class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+    private let coordinator = FlowCoordinator()
+    private let disposeBag = DisposeBag()
+    private let window = UIWindow()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        coordinator.rx.didNavigate.subscribe(onNext: {
+            AppLog.debug("did navigate to \($0) -> \($1)")
+        }).disposed(by: disposeBag)
+        
+        coordinate {
+            (AppFlow(window: $0), AppStep.main)
+        }
+
         return true
     }
 
-    // MARK: UISceneSession Lifecycle
-
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        // Called when a new scene session is being created.
-        // Use this method to select a configuration to create the new scene with.
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-    }
-
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-    }
-
-
 }
 
+extension AppDelegate {
+    private func coordinate(to: (UIWindow) -> (Flow, Step)) {
+        let (flow, step) = to(window)
+        coordinator.coordinate(flow: flow, with: OneStepper(withSingleStep: step))
+        window.makeKeyAndVisible()
+    }
+    
+    static var flowCoordinator: FlowCoordinator {
+        guard let delegate = UIApplication.shared.delegate as? AppDelegate else {
+            fatalError("Delegate type must be AppDelegate!")
+        }
+        return delegate.coordinator
+    }
+}

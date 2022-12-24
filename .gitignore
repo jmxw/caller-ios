@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+
+#Xcode
+xcuserdata/
+*.moved-aside
+*.xcuserstate
+
+# Pod
+*.xcworkspace/
+Pods/
+
+# R.swift
+*.generated.swift
+
+# rxtree
+rxtree
+.rxtree-version
+
+# Fastlane
+/build
+/.bundle
+/vendor
+/fastlane/report.xml
+/fastlane/test_output/
+
+# idea
+.idea/
+
+# build
+*.app.dSYM.zip
+*.ipa
